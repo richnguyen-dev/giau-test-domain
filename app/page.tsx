@@ -9,6 +9,7 @@ import { Features } from "@/components/features";
 import { Footer } from "@/components/footer";
 import { toast } from "sonner";
 
+
 interface SearchResult {
   baseName: string;
   results: DomainResult[];
