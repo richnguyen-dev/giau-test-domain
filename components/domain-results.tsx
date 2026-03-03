@@ -26,11 +26,11 @@ export function DomainResults({ results, baseName, onWhoisLookup }: DomainResult
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold text-foreground">
-            Ket qua cho{" "}
+            Kết quả cho{" "}
             <span className="font-mono text-primary">{baseName}</span>
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tim thay {availableCount} ten mien kha dung trong {results.length} ket qua
+            Tìm thấy {availableCount} tên miền khả dụng trong {results.length} kết quả
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ function DomainResultRow({
                 : "bg-secondary text-muted-foreground"
             }`}
           >
-            {result.available ? "Kha dung" : "Da dang ky"}
+            {result.available ? "Khả dụng" : "Đã đăng ký"}
           </Badge>
         </div>
       </div>
@@ -89,7 +89,7 @@ function DomainResultRow({
       <div className="flex items-center gap-2 pl-8 sm:pl-0">
         {result.available && (
           <span className="mr-2 text-sm font-semibold text-primary">
-            {result.price}<span className="text-xs font-normal text-muted-foreground">/nam</span>
+            {result.price}<span className="text-xs font-normal text-muted-foreground">/năm</span>
           </span>
         )}
         <Button
@@ -106,7 +106,7 @@ function DomainResultRow({
             size="sm"
             className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 text-xs"
             onClick={() => {
-              toast.success(`Dang chuyen den trang dang ky ${result.domain}...`);
+              toast.success(`Đang chuyển đến trang đăng ký ${result.domain}...`);
               window.open(
                 `https://www.namecheap.com/domains/registration/results/?domain=${result.domain}`,
                 "_blank"
@@ -126,7 +126,7 @@ function DomainResultRow({
             }}
           >
             <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-            Xem them
+            Xem thêm
           </Button>
         )}
       </div>

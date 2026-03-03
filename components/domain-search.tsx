@@ -35,17 +35,17 @@ export function DomainSearch({ onSearch, isLoading }: DomainSearchProps) {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
           </span>
-          Domain Lookup Tool
+          Công cụ tra cứu tên miền
         </div>
 
         <h1 className="mb-4 text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
-          Tim ten mien
-          <span className="text-primary"> hoan hao </span>
-          cho ban
+          Tìm tên miền
+          <span className="text-primary"> hoàn hảo </span>
+          cho bạn
         </h1>
 
         <p className="mx-auto mb-10 max-w-xl text-pretty text-base text-muted-foreground md:text-lg leading-relaxed">
-          Tra cuu tinh kha dung, xem thong tin WHOIS va dang ky ten mien ngay lap tuc voi gia tot nhat.
+          Tra cứu tính khả dụng, xem thông tin WHOIS và đăng ký tên miền ngay lập tức với giá tốt nhất.
         </p>
 
         <form onSubmit={handleSubmit} className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row">
@@ -55,7 +55,7 @@ export function DomainSearch({ onSearch, isLoading }: DomainSearchProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Nhap ten mien (vd: tenmien)"
+              placeholder="Nhập tên miền (vd: tenmien)"
               className="h-12 pl-11 pr-4 bg-secondary border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/50 text-base"
               autoFocus
             />
@@ -68,10 +68,10 @@ export function DomainSearch({ onSearch, isLoading }: DomainSearchProps) {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Dang tra cuu...
+                Đang tra cứu...
               </>
             ) : (
-              "Tra cuu"
+              "Tra cứu"
             )}
           </Button>
         </form>

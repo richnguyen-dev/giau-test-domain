@@ -35,12 +35,12 @@ export default function Home() {
         (r: DomainResult) => r.available
       ).length;
       if (available > 0) {
-        toast.success(`Tim thay ${available} ten mien kha dung!`);
+        toast.success(`Tìm thấy ${available} tên miền khả dụng!`);
       } else {
-        toast.info("Khong tim thay ten mien kha dung. Thu tu khoa khac.");
+        toast.info("Không tìm thấy tên miền khả dụng. Thử từ khóa khác.");
       }
     } catch {
-      toast.error("Co loi xay ra. Vui long thu lai.");
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }

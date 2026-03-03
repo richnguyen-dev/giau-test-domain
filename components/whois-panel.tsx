@@ -35,7 +35,7 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
       .then((d) => setData(d))
       .catch(() =>
         setData({
-          raw: "Khong the truy van thong tin WHOIS. Vui long thu lai.",
+          raw: "Không thể truy vấn thông tin WHOIS. Vui lòng thử lại.",
         })
       )
       .finally(() => setLoading(false));
@@ -49,7 +49,7 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div>
-            <h3 className="font-semibold text-foreground">WHOIS Lookup</h3>
+            <h3 className="font-semibold text-foreground">Tra cứu WHOIS</h3>
             <p className="mt-0.5 font-mono text-sm text-primary">{domain}</p>
           </div>
           <Button
@@ -69,7 +69,7 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
               <div className="flex flex-col items-center justify-center py-12 gap-3">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <p className="text-sm text-muted-foreground">
-                  Dang truy van thong tin WHOIS...
+                  Đang truy vấn thông tin WHOIS...
                 </p>
               </div>
             ) : data ? (
@@ -78,13 +78,13 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
                 {(data.registrar || data.createdDate || data.expiryDate) && (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     {data.registrar && data.registrar !== "N/A" && (
-                      <InfoCard label="Nha dang ky" value={data.registrar} />
+                      <InfoCard label="Nhà đăng ký" value={data.registrar} />
                     )}
                     {data.createdDate && data.createdDate !== "N/A" && (
-                      <InfoCard label="Ngay tao" value={data.createdDate} />
+                      <InfoCard label="Ngày tạo" value={data.createdDate} />
                     )}
                     {data.expiryDate && data.expiryDate !== "N/A" && (
-                      <InfoCard label="Ngay het han" value={data.expiryDate} />
+                      <InfoCard label="Ngày hết hạn" value={data.expiryDate} />
                     )}
                   </div>
                 )}
@@ -93,7 +93,7 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
                 {data.nameservers && data.nameservers.length > 0 && (
                   <div>
                     <h4 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                      Nameservers
+                      Máy chủ tên miền (Nameservers)
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {data.nameservers.map((ns, i) => (
@@ -113,7 +113,7 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
                   <div>
                     <div className="mb-2 flex items-center justify-between">
                       <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                        WHOIS Data
+                        Dữ liệu WHOIS
                       </h4>
                       <Button
                         variant="ghost"
@@ -121,11 +121,11 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
                         className="h-7 text-xs text-muted-foreground hover:text-foreground"
                         onClick={() => {
                           navigator.clipboard.writeText(data.raw || "");
-                          toast.success("Da sao chep WHOIS data");
+                          toast.success("Đã sao chép dữ liệu WHOIS");
                         }}
                       >
                         <Copy className="mr-1.5 h-3 w-3" />
-                        Sao chep
+                        Sao chép
                       </Button>
                     </div>
                     <pre className="max-h-[300px] overflow-auto rounded-lg border border-border bg-secondary/30 p-4 font-mono text-xs text-muted-foreground leading-relaxed">
@@ -136,7 +136,7 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
               </div>
             ) : (
               <p className="py-12 text-center text-sm text-muted-foreground">
-                Khong tim thay du lieu WHOIS.
+                Không tìm thấy dữ liệu WHOIS.
               </p>
             )}
           </div>
@@ -145,7 +145,7 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-border px-6 py-3">
           <p className="text-xs text-muted-foreground">
-            Du lieu WHOIS co the bi gioi han boi chinh sach bao mat
+            Dữ liệu WHOIS có thể bị giới hạn bởi chính sách bảo mật
           </p>
           <Button
             variant="ghost"

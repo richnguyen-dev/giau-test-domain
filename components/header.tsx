@@ -21,7 +21,7 @@ export function Header() {
             className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <Search className="h-3.5 w-3.5" />
-            Tra cuu
+            Tra cứu
           </Link>
           <Link
             href="#"

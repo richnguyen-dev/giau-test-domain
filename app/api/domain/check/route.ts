@@ -16,6 +16,37 @@ function sanitizeDomain(input: string): string {
 
 async function checkDomainAvailability(domain: string): Promise<boolean> {
   try {
+    // Ưu tiên dùng API bên ngoài nếu có cấu hình token
+    const externalToken = process.env.DOMAIN_CHECK_API_TOKEN;
+    const externalUrl =
+      process.env.DOMAIN_CHECK_API_URL ?? "https://soc.socjsc.com/domain/check";
+
+    if (externalToken) {
+      try {
+        const url = new URL(externalUrl);
+        url.searchParams.set("domain", domain);
+        url.searchParams.set("currency", "USD");
+
+        const response = await fetch(url.toString(), {
+          headers: {
+            // Giả định API dùng header Authorization Bearer; có thể chỉnh lại theo tài liệu thực tế
+            Authorization: `Bearer ${externalToken}`,
+          },
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const inferred = inferAvailabilityFromExternal(data, domain);
+          if (typeof inferred === "boolean") {
+            return inferred;
+          }
+        }
+      } catch {
+        // Nếu API ngoài lỗi thì fallback sang kiểm tra DNS như cũ
+      }
+    }
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000);
     const response = await fetch(
@@ -42,6 +73,55 @@ async function checkDomainAvailability(domain: string): Promise<boolean> {
     // If DNS lookup fails, assume it might be available
     return true;
   }
+}
+
+function inferAvailabilityFromExternal(payload: any, domain: string): boolean | null {
+  if (!payload) return null;
+
+  // Trường hợp đơn giản: trả về trực tiếp { available: boolean }
+  if (typeof payload.available === "boolean") {
+    return payload.available;
+  }
+
+  // Nếu có status kiểu "available" / "unavailable"
+  if (typeof payload.status === "string") {
+    const status = payload.status.toLowerCase();
+    if (status.includes("available")) return true;
+    if (status.includes("unavailable") || status.includes("taken")) return false;
+  }
+
+  // Nếu là map theo tên miền: { "example.com": { ... } }
+  if (!Array.isArray(payload) && typeof payload === "object") {
+    const direct = payload[domain];
+    if (direct && typeof direct === "object") {
+      return inferAvailabilityFromExternal(direct, domain);
+    }
+
+    if (Array.isArray(payload.results)) {
+      const item = payload.results.find((x: any) => x && x.domain === domain);
+      if (item) return inferAvailabilityFromExternal(item, domain);
+    }
+
+    if (Array.isArray(payload.data)) {
+      const item = payload.data.find((x: any) => x && x.domain === domain);
+      if (item) return inferAvailabilityFromExternal(item, domain);
+    }
+
+    if (payload.data && typeof payload.data === "object") {
+      const nested = payload.data[domain];
+      if (nested && typeof nested === "object") {
+        return inferAvailabilityFromExternal(nested, domain);
+      }
+    }
+  }
+
+  // Nếu là mảng [{ domain, available, ... }]
+  if (Array.isArray(payload)) {
+    const item = payload.find((x) => x && x.domain === domain);
+    if (item) return inferAvailabilityFromExternal(item, domain);
+  }
+
+  return null;
 }
 
 export async function GET(request: NextRequest) {

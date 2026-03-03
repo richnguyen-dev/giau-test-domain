@@ -3,23 +3,23 @@ import { Globe, Search, Shield, Zap } from "lucide-react";
 const features = [
   {
     icon: Search,
-    title: "Tra cuu nhanh",
-    description: "Kiem tra tinh kha dung cua hang chuc ten mien chi trong vai giay.",
+    title: "Tra cứu nhanh",
+    description: "Kiểm tra tính khả dụng của hàng chục tên miền chỉ trong vài giây.",
   },
   {
     icon: Shield,
-    title: "WHOIS chi tiet",
-    description: "Xem day du thong tin dang ky, nha cung cap va ngay het han.",
+    title: "WHOIS chi tiết",
+    description: "Xem đầy đủ thông tin đăng ký, nhà cung cấp và ngày hết hạn.",
   },
   {
     icon: Zap,
-    title: "Dang ky ngay",
-    description: "Mua ten mien truc tiep voi gia tot nhat tu cac nha cung cap uy tin.",
+    title: "Đăng ký ngay",
+    description: "Mua tên miền trực tiếp với giá tốt nhất từ các nhà cung cấp uy tín.",
   },
   {
     icon: Globe,
-    title: "Nhieu duoi ten mien",
-    description: "Ho tro .com, .net, .org, .io, .dev, .co, .app va nhieu hon.",
+    title: "Nhiều đuôi tên miền",
+    description: "Hỗ trợ .com, .net, .org, .io, .dev, .co, .app và nhiều hơn nữa.",
   },
 ];
 
@@ -29,10 +29,10 @@ export function Features() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-10 text-center">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl text-balance">
-            Moi thu ban can de tim ten mien
+            Mọi thứ bạn cần để tìm tên miền
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-muted-foreground text-pretty">
-            Cong cu tra cuu ten mien nhanh chong, chinh xac va de su dung
+            Công cụ tra cứu tên miền nhanh chóng, chính xác và dễ sử dụng
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

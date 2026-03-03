@@ -9,7 +9,7 @@ export function Footer() {
           <span>DomainScope</span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Gia tham khao. Vui long kiem tra tai nha dang ky de co gia chinh xac.
+          Giá tham khảo. Vui lòng kiểm tra tại nhà đăng ký để có giá chính xác.
         </p>
       </div>
     </footer>
