@@ -35,17 +35,16 @@ export function DomainSearch({ onSearch, isLoading }: DomainSearchProps) {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
           </span>
-          Công cụ tra cứu tên miền
+          Tra cứu tên miền
         </div>
 
         <h1 className="mb-4 text-balance text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
           Tìm tên miền
-          <span className="text-primary"> hoàn hảo </span>
-          cho bạn
+          <span className="text-primary"> phù hợp </span>
         </h1>
 
         <p className="mx-auto mb-10 max-w-xl text-pretty text-base text-muted-foreground md:text-lg leading-relaxed">
-          Tra cứu tính khả dụng, xem thông tin WHOIS và đăng ký tên miền ngay lập tức với giá tốt nhất.
+          Kiểm tra còn trống, xem WHOIS, đăng ký nhanh.
         </p>
 
         <form onSubmit={handleSubmit} className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row">
@@ -55,7 +54,7 @@ export function DomainSearch({ onSearch, isLoading }: DomainSearchProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Nhập tên miền (vd: tenmien)"
+              placeholder="Ví dụ: tenmien"
               className="h-12 pl-11 pr-4 bg-secondary border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/50 text-base"
               autoFocus
             />
@@ -68,7 +67,7 @@ export function DomainSearch({ onSearch, isLoading }: DomainSearchProps) {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Đang tra cứu...
+                Đang kiểm tra...
               </>
             ) : (
               "Tra cứu"

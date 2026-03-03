@@ -26,11 +26,11 @@ export function DomainResults({ results, baseName, onWhoisLookup }: DomainResult
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold text-foreground">
-            Kết quả cho{" "}
+            Kết quả:{" "}
             <span className="font-mono text-primary">{baseName}</span>
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Tìm thấy {availableCount} tên miền khả dụng trong {results.length} kết quả
+            {availableCount}/{results.length} tên còn trống
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ function DomainResultRow({
                 : "bg-secondary text-muted-foreground"
             }`}
           >
-            {result.available ? "Khả dụng" : "Đã đăng ký"}
+            {result.available ? "Còn trống" : "Đã có chủ"}
           </Badge>
         </div>
       </div>
@@ -106,7 +106,7 @@ function DomainResultRow({
             size="sm"
             className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 text-xs"
             onClick={() => {
-              toast.success(`Đang chuyển đến trang đăng ký ${result.domain}...`);
+              toast.success("Đang mở trang đăng ký...");
               window.open(
                 `https://www.namecheap.com/domains/registration/results/?domain=${result.domain}`,
                 "_blank"

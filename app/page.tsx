@@ -36,12 +36,12 @@ export default function Home() {
         (r: DomainResult) => r.available
       ).length;
       if (available > 0) {
-        toast.success(`Tìm thấy ${available} tên miền khả dụng!`);
+        toast.success(`Có ${available} tên còn trống!`);
       } else {
-        toast.info("Không tìm thấy tên miền khả dụng. Thử từ khóa khác.");
+        toast.info("Không còn tên trống. Thử từ khác.");
       }
     } catch {
-      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+      toast.error("Lỗi. Thử lại.");
     } finally {
       setIsLoading(false);
     }
