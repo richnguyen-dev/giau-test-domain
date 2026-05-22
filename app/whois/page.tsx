@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { focusWhoisInput } from "@/lib/nav";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { WhoisPanel } from "@/components/whois-panel";
@@ -13,6 +14,10 @@ export default function WhoisPage() {
   const [domain, setDomain] = useState("");
   const [lookupDomain, setLookupDomain] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    focusWhoisInput();
+  }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -40,6 +45,7 @@ export default function WhoisPage() {
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              id="whois-domain-input"
               type="text"
               value={domain}
               onChange={(e) => setDomain(e.target.value)}

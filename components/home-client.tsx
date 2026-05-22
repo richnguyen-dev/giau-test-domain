@@ -11,6 +11,7 @@ import { Footer } from "@/components/footer";
 import { AccuracyBanner } from "@/components/accuracy-banner";
 import { toast } from "sonner";
 import { addToSearchHistory, getSearchHistory } from "@/lib/search-history";
+import { scrollToSearchSection } from "@/lib/nav";
 
 interface SearchResult {
   baseName: string;
@@ -83,6 +84,15 @@ export function HomeClient() {
     if (!q || q === lastFetchedRef.current) return;
     runSearch(q, false);
   }, [searchParams, runSearch]);
+
+  useEffect(() => {
+    if (searchParams.get("scroll") === "search") {
+      scrollToSearchSection();
+      const q = searchParams.get("q");
+      const next = q ? `/?q=${encodeURIComponent(q)}` : "/";
+      router.replace(next, { scroll: false });
+    }
+  }, [searchParams, router]);
 
   const handleWhoisLookup = useCallback((domain: string) => {
     setWhoisDomain(domain);

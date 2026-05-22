@@ -43,7 +43,7 @@ export function DomainSearch({
   );
 
   return (
-    <section id="search" className="relative overflow-hidden py-20 md:py-28">
+    <section id="search" className="relative scroll-mt-20 overflow-hidden py-20 md:py-28">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[400px] w-[600px] rounded-full bg-primary/5 blur-[120px]" />
 
@@ -69,6 +69,7 @@ export function DomainSearch({
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              id="domain-search-input"
               type="text"
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
