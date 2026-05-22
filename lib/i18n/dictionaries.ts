@@ -120,6 +120,12 @@ export const dictionaries = {
       en: "EN",
       switch: "Ngôn ngữ",
     },
+    theme: {
+      light: "Sáng",
+      dark: "Tối",
+      lightAria: "Bật chế độ sáng",
+      darkAria: "Bật chế độ tối",
+    },
   },
   en: {
     nav: {
@@ -239,6 +245,12 @@ export const dictionaries = {
       vi: "VI",
       en: "EN",
       switch: "Language",
+    },
+    theme: {
+      light: "Light",
+      dark: "Dark",
+      lightAria: "Switch to light mode",
+      darkAria: "Switch to dark mode",
     },
   },
 } as const;

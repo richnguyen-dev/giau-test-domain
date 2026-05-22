@@ -7,6 +7,7 @@ import Link from "next/link";
 import { scrollToSearchSection } from "@/lib/nav";
 import { useLanguage } from "@/components/language-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Header() {
   const pathname = usePathname();
@@ -71,12 +72,14 @@ export function Header() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
           <nav className="flex items-center gap-6">{navItems}</nav>
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
           <LanguageSwitcher />
           <button
             type="button"
