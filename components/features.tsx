@@ -4,36 +4,18 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Globe, Search, Shield, Zap } from "lucide-react";
 import { scrollToSearchSection } from "@/lib/nav";
-
-const features = [
-  {
-    icon: Search,
-    title: "Tra cứu nhanh",
-    description: "Kiểm tra nhiều tên trong vài giây.",
-    action: "search" as const,
-  },
-  {
-    icon: Shield,
-    title: "Thông tin WHOIS",
-    description: "Xem ai đăng ký, ngày tạo, ngày hết hạn.",
-    action: "whois" as const,
-  },
-  {
-    icon: Zap,
-    title: "Mua tên miền",
-    description: "Chuyển tới trang mua, giá tham khảo.",
-    action: "search" as const,
-  },
-  {
-    icon: Globe,
-    title: "Nhiều đuôi",
-    description: ".com, .net, .io, .dev, .co...",
-    action: "search" as const,
-  },
-];
+import { useLanguage } from "@/components/language-provider";
 
 export function Features() {
   const router = useRouter();
+  const { t } = useLanguage();
+
+  const features = [
+    { icon: Search, titleKey: "features.fastTitle", descKey: "features.fastDesc", action: "search" as const },
+    { icon: Shield, titleKey: "features.whoisTitle", descKey: "features.whoisDesc", action: "whois" as const },
+    { icon: Zap, titleKey: "features.buyTitle", descKey: "features.buyDesc", action: "search" as const },
+    { icon: Globe, titleKey: "features.tldsTitle", descKey: "features.tldsDesc", action: "search" as const },
+  ];
 
   const handleFeatureClick = useCallback(
     (action: "search" | "whois") => {
@@ -51,16 +33,16 @@ export function Features() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-10 text-center">
           <h2 className="text-2xl font-bold text-foreground md:text-3xl text-balance">
-            Tìm tên miền dễ dàng
+            {t("features.sectionTitle")}
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-muted-foreground text-pretty">
-            Nhanh, đơn giản
+            {t("features.sectionSubtitle")}
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
             <button
-              key={feature.title}
+              key={feature.titleKey}
               type="button"
               onClick={() => handleFeatureClick(feature.action)}
               className="group rounded-xl border border-border/50 bg-card p-6 text-left transition-all hover:border-primary/30 hover:bg-primary/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
@@ -69,10 +51,10 @@ export function Features() {
                 <feature.icon className="h-5 w-5 text-primary" />
               </div>
               <h3 className="mb-2 text-sm font-semibold text-foreground">
-                {feature.title}
+                {t(feature.titleKey)}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {feature.description}
+                {t(feature.descKey)}
               </p>
             </button>
           ))}

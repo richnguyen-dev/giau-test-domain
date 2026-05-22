@@ -5,10 +5,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { Globe, Search, Shield, HelpCircle, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { scrollToSearchSection } from "@/lib/nav";
+import { useLanguage } from "@/components/language-provider";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
@@ -35,7 +38,7 @@ export function Header() {
         className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <Search className="h-3.5 w-3.5" />
-        Tra cứu
+        {t("nav.search")}
       </button>
       <button
         type="button"
@@ -43,7 +46,7 @@ export function Header() {
         className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <Shield className="h-3.5 w-3.5" />
-        WHOIS
+        {t("nav.whois")}
       </button>
       <Link
         href="/faq"
@@ -51,7 +54,7 @@ export function Header() {
         className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <HelpCircle className="h-3.5 w-3.5" />
-        FAQ
+        {t("nav.faq")}
       </Link>
     </>
   );
@@ -68,14 +71,18 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">{navItems}</nav>
+        <div className="hidden items-center gap-4 md:flex">
+          <nav className="flex items-center gap-6">{navItems}</nav>
+          <LanguageSwitcher />
+        </div>
 
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher />
           <button
             type="button"
             onClick={handleSearchNav}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
-            aria-label="Tra cứu tên miền"
+            aria-label={t("nav.searchAria")}
           >
             <Search className="h-4 w-4" />
           </button>
@@ -83,7 +90,7 @@ export function Header() {
             type="button"
             onClick={handleWhoisNav}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
-            aria-label="Tra cứu WHOIS"
+            aria-label={t("nav.whoisAria")}
           >
             <Shield className="h-4 w-4" />
           </button>
@@ -91,7 +98,7 @@ export function Header() {
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground"
-            aria-label="Mở menu"
+            aria-label={t("nav.openMenu")}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

@@ -2,6 +2,7 @@
 
 import { Clock, X } from "lucide-react";
 import { clearSearchHistory } from "@/lib/search-history";
+import { useLanguage } from "@/components/language-provider";
 
 interface SearchHistoryProps {
   items: string[];
@@ -10,6 +11,8 @@ interface SearchHistoryProps {
 }
 
 export function SearchHistory({ items, onSelect, onClear }: SearchHistoryProps) {
+  const { t } = useLanguage();
+
   if (items.length === 0) return null;
 
   return (
@@ -17,7 +20,7 @@ export function SearchHistory({ items, onSelect, onClear }: SearchHistoryProps) 
       <div className="mb-2 flex items-center justify-between px-1">
         <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
           <Clock className="h-3.5 w-3.5" />
-          Tra cứu gần đây
+          {t("history.title")}
         </span>
         <button
           type="button"
@@ -28,7 +31,7 @@ export function SearchHistory({ items, onSelect, onClear }: SearchHistoryProps) 
           className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
           <X className="h-3 w-3" />
-          Xóa
+          {t("history.clear")}
         </button>
       </div>
       <div className="flex flex-wrap gap-2">

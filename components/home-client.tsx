@@ -12,6 +12,7 @@ import { AccuracyBanner } from "@/components/accuracy-banner";
 import { toast } from "sonner";
 import { addToSearchHistory, getSearchHistory } from "@/lib/search-history";
 import { scrollToSearchSection } from "@/lib/nav";
+import { useLanguage } from "@/components/language-provider";
 
 interface SearchResult {
   baseName: string;
@@ -22,6 +23,7 @@ interface SearchResult {
 export function HomeClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +53,7 @@ export function HomeClient() {
         const res = await fetch(`/api/domain/check?q=${encodeURIComponent(trimmed)}`);
         if (res.status === 429) {
           const err = await res.json();
-          toast.error(`Quá nhiều yêu cầu. Thử lại sau ${err.retryAfter ?? 60}s.`);
+          toast.error(t("toast.rateLimit", { seconds: err.retryAfter ?? 60 }));
           return;
         }
         if (!res.ok) throw new Error("Failed to check domain");
@@ -62,21 +64,21 @@ export function HomeClient() {
 
         const available = data.results.filter((r) => r.available).length;
         if (available > 0) {
-          toast.success(`Có ${available} tên còn trống!`);
+          toast.success(t("toast.available", { count: available }));
         } else {
-          toast.info("Không còn tên trống. Thử từ khác.");
+          toast.info(t("toast.noneAvailable"));
         }
 
         requestAnimationFrame(() => {
           document.getElementById("results")?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
       } catch {
-        toast.error("Lỗi. Thử lại.");
+        toast.error(t("toast.error"));
       } finally {
         setIsLoading(false);
       }
     },
-    [router]
+    [router, t]
   );
 
   useEffect(() => {

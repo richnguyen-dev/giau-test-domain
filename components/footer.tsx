@@ -1,7 +1,12 @@
+"use client";
+
 import { Globe } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/components/language-provider";
 
 export function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="border-t border-border/50 py-8">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 sm:flex-row sm:justify-between">
@@ -11,14 +16,14 @@ export function Footer() {
         </div>
         <nav className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
           <Link href="/whois" className="hover:text-foreground transition-colors">
-            Tra WHOIS
+            {t("footer.whoisLink")}
           </Link>
           <Link href="/faq" className="hover:text-foreground transition-colors">
-            FAQ
+            {t("nav.faq")}
           </Link>
         </nav>
         <p className="text-xs text-muted-foreground text-center sm:text-right">
-          Giá tham khảo. Kiểm tra tại nơi bán để biết giá đúng.
+          {t("footer.priceNote")}
         </p>
       </div>
     </footer>

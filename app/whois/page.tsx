@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { focusWhoisInput } from "@/lib/nav";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { WhoisPanel } from "@/components/whois-panel";
@@ -9,8 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { focusWhoisInput } from "@/lib/nav";
+import { useLanguage } from "@/components/language-provider";
 
 export default function WhoisPage() {
+  const { t } = useLanguage();
   const [domain, setDomain] = useState("");
   const [lookupDomain, setLookupDomain] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,9 +38,10 @@ export default function WhoisPage() {
       <Header />
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
-        <h1 className="mb-2 text-3xl font-bold text-foreground">Tra cứu WHOIS</h1>
+        <h1 className="mb-2 text-3xl font-bold text-foreground">{t("whois.pageTitle")}</h1>
         <p className="mb-8 text-muted-foreground">
-          Nhập tên miền đầy đủ (ví dụ: <span className="font-mono text-primary">example.com</span>).
+          {t("whois.pageDesc")}{" "}
+          <span className="font-mono text-primary">example.com</span>).
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
@@ -57,20 +60,20 @@ export default function WhoisPage() {
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Đang tải...
+                {t("whois.loading")}
               </>
             ) : (
-              "Xem WHOIS"
+              t("whois.submit")
             )}
           </Button>
         </form>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          Hoặc{" "}
+          {t("whois.backPrefix")}{" "}
           <Link href="/" className="text-primary hover:underline">
-            tra cứu còn trống
+            {t("whois.backToSearch")}
           </Link>{" "}
-          trên trang chủ.
+          {t("whois.backSuffix")}
         </p>
       </main>
 

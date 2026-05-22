@@ -5,6 +5,7 @@ import { CheckCircle2, XCircle, ShoppingCart, Eye, ExternalLink, ArrowUpDown } f
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { useLanguage } from "@/components/language-provider";
 
 export interface DomainResult {
   domain: string;
@@ -29,6 +30,7 @@ function parsePrice(price: string): number {
 }
 
 export function DomainResults({ results, baseName, onWhoisLookup }: DomainResultsProps) {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<FilterMode>("all");
   const [sort, setSort] = useState<SortMode>("default");
 
@@ -51,28 +53,31 @@ export function DomainResults({ results, baseName, onWhoisLookup }: DomainResult
 
   const availableCount = results.filter((r) => r.available).length;
 
+  const filterOptions = [
+    ["all", "results.filterAll"],
+    ["available", "results.filterAvailable"],
+    ["taken", "results.filterTaken"],
+  ] as const;
+
   return (
     <section id="results" className="mx-auto max-w-4xl px-6 pb-16">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold text-foreground">
-            Kết quả:{" "}
+            {t("results.title")}{" "}
             <span className="font-mono text-primary">{baseName}</span>
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {availableCount}/{results.length} tên còn trống
+            {t("results.availableCount", {
+              available: availableCount,
+              total: results.length,
+            })}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex rounded-lg border border-border p-0.5">
-            {(
-              [
-                ["all", "Tất cả"],
-                ["available", "Còn trống"],
-                ["taken", "Đã có chủ"],
-              ] as const
-            ).map(([key, label]) => (
+            {filterOptions.map(([key, labelKey]) => (
               <button
                 key={key}
                 type="button"
@@ -83,7 +88,7 @@ export function DomainResults({ results, baseName, onWhoisLookup }: DomainResult
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {label}
+                {t(labelKey)}
               </button>
             ))}
           </div>
@@ -95,10 +100,10 @@ export function DomainResults({ results, baseName, onWhoisLookup }: DomainResult
               onChange={(e) => setSort(e.target.value as SortMode)}
               className="bg-transparent text-xs text-foreground outline-none"
             >
-              <option value="default">Ưu tiên còn trống</option>
-              <option value="price-asc">Giá thấp → cao</option>
-              <option value="price-desc">Giá cao → thấp</option>
-              <option value="tld">Theo TLD</option>
+              <option value="default">{t("results.sortDefault")}</option>
+              <option value="price-asc">{t("results.sortPriceAsc")}</option>
+              <option value="price-desc">{t("results.sortPriceDesc")}</option>
+              <option value="tld">{t("results.sortTld")}</option>
             </select>
           </div>
         </div>
@@ -106,7 +111,7 @@ export function DomainResults({ results, baseName, onWhoisLookup }: DomainResult
 
       {filtered.length === 0 ? (
         <p className="rounded-xl border border-border bg-secondary/30 py-8 text-center text-sm text-muted-foreground">
-          Không có kết quả với bộ lọc này.
+          {t("results.noResults")}
         </p>
       ) : (
         <div className="space-y-2">
@@ -130,6 +135,8 @@ function DomainResultRow({
   result: DomainResult;
   onWhoisLookup: (domain: string) => void;
 }) {
+  const { t } = useLanguage();
+
   return (
     <div
       className={`group flex flex-col gap-3 rounded-xl border p-4 transition-all sm:flex-row sm:items-center sm:justify-between ${
@@ -156,7 +163,7 @@ function DomainResultRow({
                 : "bg-secondary text-muted-foreground"
             }`}
           >
-            {result.available ? "Còn trống" : "Đã có chủ"}
+            {result.available ? t("results.available") : t("results.taken")}
           </Badge>
         </div>
       </div>
@@ -165,7 +172,9 @@ function DomainResultRow({
         {result.available && (
           <span className="mr-2 text-sm font-semibold text-primary">
             {result.price}
-            <span className="text-xs font-normal text-muted-foreground">/năm</span>
+            <span className="text-xs font-normal text-muted-foreground">
+              {t("results.perYear")}
+            </span>
           </span>
         )}
         <Button
@@ -175,14 +184,14 @@ function DomainResultRow({
           onClick={() => onWhoisLookup(result.domain)}
         >
           <Eye className="mr-1.5 h-3.5 w-3.5" />
-          WHOIS
+          {t("results.whois")}
         </Button>
         {result.available ? (
           <Button
             size="sm"
             className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 text-xs"
             onClick={() => {
-              toast.success("Đang mở trang đăng ký...");
+              toast.success(t("results.openingRegister"));
               window.open(
                 `https://www.namecheap.com/domains/registration/results/?domain=${result.domain}`,
                 "_blank"
@@ -190,7 +199,7 @@ function DomainResultRow({
             }}
           >
             <ShoppingCart className="mr-1.5 h-3.5 w-3.5" />
-            Mua ngay
+            {t("results.buyNow")}
           </Button>
         ) : (
           <Button
@@ -205,7 +214,7 @@ function DomainResultRow({
             }}
           >
             <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-            Xem thêm
+            {t("results.viewMore")}
           </Button>
         )}
       </div>

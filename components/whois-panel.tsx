@@ -4,7 +4,8 @@ import { X, Loader2, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/components/language-provider";
 
 interface WhoisData {
   domain?: string;
@@ -22,6 +23,9 @@ interface WhoisPanelProps {
 }
 
 export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
+  const { t } = useLanguage();
+  const tRef = useRef(t);
+  tRef.current = t;
   const [data, setData] = useState<WhoisData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +39,7 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
       .then((d) => setData(d))
       .catch(() =>
         setData({
-          raw: "Lỗi. Thử lại.",
+          raw: tRef.current("whois.error"),
         })
       )
       .finally(() => setLoading(false));
@@ -46,10 +50,9 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-background/80 backdrop-blur-sm pt-20 px-4">
       <div className="relative w-full max-w-2xl rounded-2xl border border-border bg-card shadow-2xl shadow-primary/5 animate-in fade-in-0 slide-in-from-bottom-4 duration-300">
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div>
-            <h3 className="font-semibold text-foreground">Thông tin WHOIS</h3>
+            <h3 className="font-semibold text-foreground">{t("whois.panelTitle")}</h3>
             <p className="mt-0.5 font-mono text-sm text-primary">{domain}</p>
           </div>
           <Button
@@ -62,38 +65,33 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
           </Button>
         </div>
 
-        {/* Content */}
         <ScrollArea className="max-h-[60vh]">
           <div className="p-6">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">
-                  Đang tải...
-                </p>
+                <p className="text-sm text-muted-foreground">{t("whois.loading")}</p>
               </div>
             ) : data ? (
               <div className="space-y-6">
-                {/* Summary Cards */}
                 {(data.registrar || data.createdDate || data.expiryDate) && (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     {data.registrar && data.registrar !== "N/A" && (
-                      <InfoCard label="Nơi đăng ký" value={data.registrar} />
+                      <InfoCard label={t("whois.registrar")} value={data.registrar} />
                     )}
                     {data.createdDate && data.createdDate !== "N/A" && (
-                      <InfoCard label="Ngày tạo" value={data.createdDate} />
+                      <InfoCard label={t("whois.created")} value={data.createdDate} />
                     )}
                     {data.expiryDate && data.expiryDate !== "N/A" && (
-                      <InfoCard label="Hết hạn" value={data.expiryDate} />
+                      <InfoCard label={t("whois.expiry")} value={data.expiryDate} />
                     )}
                   </div>
                 )}
 
-                {/* Nameservers */}
                 {data.nameservers && data.nameservers.length > 0 && (
                   <div>
                     <h4 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                      Nameservers
+                      {t("whois.nameservers")}
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {data.nameservers.map((ns, i) => (
@@ -108,12 +106,11 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
                   </div>
                 )}
 
-                {/* Raw WHOIS */}
                 {data.raw && (
                   <div>
                     <div className="mb-2 flex items-center justify-between">
                       <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                        Chi tiết WHOIS
+                        {t("whois.details")}
                       </h4>
                       <Button
                         variant="ghost"
@@ -121,11 +118,11 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
                         className="h-7 text-xs text-muted-foreground hover:text-foreground"
                         onClick={() => {
                           navigator.clipboard.writeText(data.raw || "");
-                          toast.success("Đã copy");
+                          toast.success(t("whois.copied"));
                         }}
                       >
                         <Copy className="mr-1.5 h-3 w-3" />
-                        Sao chép
+                        {t("whois.copy")}
                       </Button>
                     </div>
                     <pre className="max-h-[300px] overflow-auto rounded-lg border border-border bg-secondary/30 p-4 font-mono text-xs text-muted-foreground leading-relaxed">
@@ -136,27 +133,19 @@ export function WhoisPanel({ domain, onClose }: WhoisPanelProps) {
               </div>
             ) : (
               <p className="py-12 text-center text-sm text-muted-foreground">
-                Không có dữ liệu.
+                {t("whois.noData")}
               </p>
             )}
           </div>
         </ScrollArea>
 
-        {/* Footer */}
         <div className="flex items-center justify-between border-t border-border px-6 py-3">
-          <p className="text-xs text-muted-foreground">
-            Một số thông tin có thể bị ẩn
-          </p>
+          <p className="text-xs text-muted-foreground">{t("whois.privacyNote")}</p>
           <Button
             variant="ghost"
             size="sm"
             className="h-7 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() =>
-              window.open(
-                `https://who.is/whois/${domain}`,
-                "_blank"
-              )
-            }
+            onClick={() => window.open(`https://who.is/whois/${domain}`, "_blank")}
           >
             <ExternalLink className="mr-1.5 h-3 w-3" />
             who.is
@@ -173,9 +162,7 @@ function InfoCard({ label, value }: { label: string; value: string }) {
       <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 truncate text-sm font-medium text-foreground">
-        {value}
-      </p>
+      <p className="mt-1 truncate text-sm font-medium text-foreground">{value}</p>
     </div>
   );
 }
