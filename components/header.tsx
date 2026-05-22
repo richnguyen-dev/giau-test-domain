@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Search, Shield } from "lucide-react";
+import { Globe, Search, Shield, HelpCircle } from "lucide-react";
 import Link from "next/link";
 
 export function Header() {
@@ -17,18 +17,25 @@ export function Header() {
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
           <Link
-            href="#"
+            href="/#search"
             className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <Search className="h-3.5 w-3.5" />
             Tra cứu
           </Link>
           <Link
-            href="#"
+            href="/whois"
             className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <Shield className="h-3.5 w-3.5" />
             WHOIS
+          </Link>
+          <Link
+            href="/faq"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <HelpCircle className="h-3.5 w-3.5" />
+            FAQ
           </Link>
         </nav>
       </div>

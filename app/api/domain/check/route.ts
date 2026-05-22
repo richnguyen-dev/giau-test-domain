@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit, getCached, getClientIp, setCache } from "@/lib/api-guard";
 
 const POPULAR_TLDS = [".com", ".net", ".org", ".io", ".dev", ".co", ".app", ".xyz", ".me", ".info"];
 
@@ -6,7 +7,6 @@ function sanitizeDomain(input: string): string {
   let domain = input.trim().toLowerCase();
   domain = domain.replace(/^(https?:\/\/)?(www\.)?/, "");
   domain = domain.replace(/\/.*$/, "");
-  // If they typed something like "example.com", extract just "example"
   const parts = domain.split(".");
   if (parts.length >= 2 && POPULAR_TLDS.includes("." + parts[parts.length - 1])) {
     return parts.slice(0, -1).join(".");
@@ -16,7 +16,6 @@ function sanitizeDomain(input: string): string {
 
 async function checkDomainAvailability(domain: string): Promise<boolean> {
   try {
-    // Ưu tiên dùng API bên ngoài nếu có cấu hình token
     const externalToken = process.env.DOMAIN_CHECK_API_TOKEN;
     const externalUrl =
       process.env.DOMAIN_CHECK_API_URL ?? "https://soc.socjsc.com/domain/check";
@@ -29,7 +28,6 @@ async function checkDomainAvailability(domain: string): Promise<boolean> {
 
         const response = await fetch(url.toString(), {
           headers: {
-            // Giả định API dùng header Authorization Bearer; có thể chỉnh lại theo tài liệu thực tế
             Authorization: `Bearer ${externalToken}`,
           },
           signal: AbortSignal.timeout(5000),
@@ -43,7 +41,7 @@ async function checkDomainAvailability(domain: string): Promise<boolean> {
           }
         }
       } catch {
-        // Nếu API ngoài lỗi thì fallback sang kiểm tra DNS như cũ
+        // fallback DNS
       }
     }
 
@@ -55,12 +53,9 @@ async function checkDomainAvailability(domain: string): Promise<boolean> {
     );
     clearTimeout(timeout);
     const data = await response.json();
-    // If Status is 3 (NXDOMAIN), the domain doesn't exist
     if (data.Status === 3) return true;
-    // If there are answers, the domain is taken
     if (data.Answer && data.Answer.length > 0) return false;
-    // If no answers but status is 0, it could still be registered (no A record)
-    // Try NS record lookup
+
     const nsResponse = await fetch(
       `https://dns.google/resolve?name=${domain}&type=NS`,
       { signal: AbortSignal.timeout(3000) }
@@ -70,88 +65,58 @@ async function checkDomainAvailability(domain: string): Promise<boolean> {
     if (nsData.Answer && nsData.Answer.length > 0) return false;
     return true;
   } catch {
-    // If DNS lookup fails, assume it might be available
     return true;
   }
 }
 
-function inferAvailabilityFromExternal(payload: any, domain: string): boolean | null {
-  if (!payload) return null;
+function inferAvailabilityFromExternal(payload: unknown, domain: string): boolean | null {
+  if (!payload || typeof payload !== "object") return null;
+  const p = payload as Record<string, unknown>;
 
-  // Trường hợp đơn giản: trả về trực tiếp { available: boolean }
-  if (typeof payload.available === "boolean") {
-    return payload.available;
-  }
+  if (typeof p.available === "boolean") return p.available;
 
-  // Nếu có status kiểu "available" / "unavailable"
-  if (typeof payload.status === "string") {
-    const status = payload.status.toLowerCase();
+  if (typeof p.status === "string") {
+    const status = p.status.toLowerCase();
     if (status.includes("available")) return true;
     if (status.includes("unavailable") || status.includes("taken")) return false;
   }
 
-  // Nếu là map theo tên miền: { "example.com": { ... } }
-  if (!Array.isArray(payload) && typeof payload === "object") {
-    const direct = payload[domain];
+  if (!Array.isArray(payload)) {
+    const direct = p[domain];
     if (direct && typeof direct === "object") {
       return inferAvailabilityFromExternal(direct, domain);
     }
 
-    if (Array.isArray(payload.results)) {
-      const item = payload.results.find((x: any) => x && x.domain === domain);
+    if (Array.isArray(p.results)) {
+      const item = (p.results as unknown[]).find(
+        (x) => x && typeof x === "object" && (x as Record<string, unknown>).domain === domain
+      );
       if (item) return inferAvailabilityFromExternal(item, domain);
     }
 
-    if (Array.isArray(payload.data)) {
-      const item = payload.data.find((x: any) => x && x.domain === domain);
+    if (Array.isArray(p.data)) {
+      const item = (p.data as unknown[]).find(
+        (x) => x && typeof x === "object" && (x as Record<string, unknown>).domain === domain
+      );
       if (item) return inferAvailabilityFromExternal(item, domain);
     }
 
-    if (payload.data && typeof payload.data === "object") {
-      const nested = payload.data[domain];
+    if (p.data && typeof p.data === "object") {
+      const nested = (p.data as Record<string, unknown>)[domain];
       if (nested && typeof nested === "object") {
         return inferAvailabilityFromExternal(nested, domain);
       }
     }
   }
 
-  // Nếu là mảng [{ domain, available, ... }]
   if (Array.isArray(payload)) {
-    const item = payload.find((x) => x && x.domain === domain);
+    const item = payload.find(
+      (x) => x && typeof x === "object" && (x as Record<string, unknown>).domain === domain
+    );
     if (item) return inferAvailabilityFromExternal(item, domain);
   }
 
   return null;
-}
-
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const query = searchParams.get("q");
-
-  if (!query) {
-    return NextResponse.json({ error: "Missing query parameter 'q'" }, { status: 400 });
-  }
-
-  const baseName = sanitizeDomain(query);
-  if (!baseName || baseName.length < 1) {
-    return NextResponse.json({ error: "Invalid domain name" }, { status: 400 });
-  }
-
-  const results = await Promise.all(
-    POPULAR_TLDS.map(async (tld) => {
-      const fullDomain = `${baseName}${tld}`;
-      const available = await checkDomainAvailability(fullDomain);
-      const price = generatePrice(tld, available);
-      return {
-        domain: fullDomain,
-        tld,
-        available,
-        price,
-      };
-    })
-  );
-
-  return NextResponse.json({ baseName, results });
 }
 
 function generatePrice(tld: string, available: boolean): string {
@@ -169,4 +134,49 @@ function generatePrice(tld: string, available: boolean): string {
     ".info": "$4.99",
   };
   return prices[tld] || "$9.99";
+}
+
+export async function GET(request: NextRequest) {
+  const ip = getClientIp(request);
+  const rate = checkRateLimit(ip);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "Quá nhiều yêu cầu. Thử lại sau.", retryAfter: rate.retryAfter },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfter) } }
+    );
+  }
+
+  const searchParams = request.nextUrl.searchParams;
+  const query = searchParams.get("q");
+
+  if (!query) {
+    return NextResponse.json({ error: "Missing query parameter 'q'" }, { status: 400 });
+  }
+
+  const baseName = sanitizeDomain(query);
+  if (!baseName || baseName.length < 1) {
+    return NextResponse.json({ error: "Invalid domain name" }, { status: 400 });
+  }
+
+  const cacheKey = `check:${baseName}`;
+  const cached = getCached<{ baseName: string; results: unknown[]; source: string }>(cacheKey);
+  if (cached) {
+    return NextResponse.json({ ...cached, cached: true });
+  }
+
+  const source = process.env.DOMAIN_CHECK_API_TOKEN ? "api" : "dns";
+
+  const results = await Promise.all(
+    POPULAR_TLDS.map(async (tld) => {
+      const fullDomain = `${baseName}${tld}`;
+      const available = await checkDomainAvailability(fullDomain);
+      const price = generatePrice(tld, available);
+      return { domain: fullDomain, tld, available, price };
+    })
+  );
+
+  const payload = { baseName, results, source };
+  setCache(cacheKey, payload);
+
+  return NextResponse.json(payload);
 }

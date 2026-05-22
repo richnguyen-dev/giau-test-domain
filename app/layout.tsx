@@ -10,7 +10,6 @@ const _jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-je
 export const metadata: Metadata = {
   title: 'DomainScope - Domain Lookup & WHOIS Tool',
   description: 'Check domain availability, view WHOIS information, and find your perfect domain name. Fast, reliable, and free domain lookup tool.',
-  generator: 'v0.app',
   icons: {
     icon: [
       {

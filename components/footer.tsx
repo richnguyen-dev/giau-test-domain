@@ -1,4 +1,5 @@
 import { Globe } from "lucide-react";
+import Link from "next/link";
 
 export function Footer() {
   return (
@@ -8,7 +9,15 @@ export function Footer() {
           <Globe className="h-4 w-4 text-primary" />
           <span>DomainScope</span>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <nav className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+          <Link href="/whois" className="hover:text-foreground transition-colors">
+            Tra WHOIS
+          </Link>
+          <Link href="/faq" className="hover:text-foreground transition-colors">
+            FAQ
+          </Link>
+        </nav>
+        <p className="text-xs text-muted-foreground text-center sm:text-right">
           Giá tham khảo. Kiểm tra tại nơi bán để biết giá đúng.
         </p>
       </div>
